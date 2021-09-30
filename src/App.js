@@ -1,15 +1,27 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Cell from './Cell.js'
-import { useState } from 'react';
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://127.0.0.1:4001";
 
 function App() {
+  // const [socket, setSocket] = useState(null);
+  const [response, setResponse] = useState("");
   const [board, setBoard] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [playerStatus, setPlayerStatus] = useState(1)
 
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("FromAPI", data => {
+      console.log("this is data, line 17: ", data)
+      setResponse(data);
+    });
+  }, []);
+
   const cells = board.map((cell, ind) => {
     return (
-        <Cell key={ind} handleClick={handleClick} id={ind} status={cell} />
+      <Cell key={ind} handleClick={handleClick} id={ind} status={cell} />
     )
   })
 
@@ -27,10 +39,14 @@ function App() {
     togglePlayer()
   }
 
+
   // replace table using flexbox 
   // dynamically create the board using map
   return (
     <div className="App">
+      <p>
+        It's <time dateTime={response}>{response}</time>
+      </p>
       <header onClick={togglePlayer}>
         {playerStatus === 1 ? "Player 1's Turn" : "Player 2's Turn"}
       </header>
