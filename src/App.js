@@ -1,23 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Cell from './Cell.js'
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4001";
+import ClientComponent from './ClientComponent';
 
 function App() {
-  // const [socket, setSocket] = useState(null);
-  const [response, setResponse] = useState("");
+  const [loadClient, setLoadClient] = useState(true);
+
   const [board, setBoard] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [playerStatus, setPlayerStatus] = useState(1)
-
-
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("FromAPI", data => {
-      console.log("this is data, line 17: ", data)
-      setResponse(data);
-    });
-  }, []);
 
   const cells = board.map((cell, ind) => {
     return (
@@ -44,9 +34,15 @@ function App() {
   // dynamically create the board using map
   return (
     <div className="App">
-      <p>
-        It's <time dateTime={response}>{response}</time>
-      </p>
+      {/* START CODE TO LOAD OR UNLOAD THE CLIENT */}
+      <button onClick={() => setLoadClient(prevState => !prevState)}>
+        STOP CLIENT
+      </button>
+      {/* SOCKET IO CLIENT*/}
+      {loadClient ? <ClientComponent /> : null}
+      {/* END CODE TO  LOAD OR UNLOAD THE CLIENT */}
+
+
       <header onClick={togglePlayer}>
         {playerStatus === 1 ? "Player 1's Turn" : "Player 2's Turn"}
       </header>
