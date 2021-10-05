@@ -4,7 +4,7 @@ const ENDPOINT = "http://127.0.0.1:4001";
 
 export default function ClientComponent() {
   const [response, setResponse] = useState("");
-
+  let socket;
   // useEffect(() => {
   //   const socket = socketIOClient(ENDPOINT);
   //   socket.on("FromAPI", data => {
@@ -13,17 +13,28 @@ export default function ClientComponent() {
   //   return () => socket.disconnect();
   // }, []);
   useEffect(() => {
-    var socket = socketIOClient(ENDPOINT);
+    socket = socketIOClient(ENDPOINT);
     socket.on("FromAPI", data => {
       setResponse(data);
+    });
+    socket.on("connected", data => {
+      console.log(data);
     });
     return () => socket.disconnect();
   }, []);
 
+  function handleMove(){
+    console.log('socket: ', socket)
+    socket.emit('move', 'X')
+  }
+
 
   return (
-    <p>
-      CHILD: It's <time dateTime={response}>{response}</time>
-    </p>
+    <div>
+      <button onClick={handleMove}>Make a move</button>
+      <p>
+        CHILD: It's <time dateTime={response}>{response}</time>
+      </p>
+    </div>
   );
 }
