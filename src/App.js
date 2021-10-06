@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import socketIOClient from "socket.io-client";
 import './App.css';
 import Cell from './Cell.js'
 import ClientComponent from './ClientComponent';
 
 function App() {
   const [loadClient, setLoadClient] = useState(true);
-
   const [board, setBoard] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [playerStatus, setPlayerStatus] = useState(1)
+  const [socket, setSocket] = useState(null)
+  const ENDPOINT = "http://127.0.0.1:4001";
+
+
+  useEffect(() => {
+    const newSocket = socketIOClient(ENDPOINT);
+    setSocket(newSocket)
+    
+    return () => socket.disconnect();
+  }, [setSocket]);
 
   // const winCombos = [
   //   [0,1,2],
@@ -56,7 +66,7 @@ function App() {
         STOP CLIENT
       </button>
       {/* SOCKET IO CLIENT*/}
-      {loadClient ? <ClientComponent /> : null}
+      {loadClient && socket ? <ClientComponent socket={socket} /> : null}
       {/* END CODE TO  LOAD OR UNLOAD THE CLIENT */}
 
 
