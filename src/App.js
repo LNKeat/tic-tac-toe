@@ -9,7 +9,8 @@ function App() {
   const [board, setBoard] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [playerStatus, setPlayerStatus] = useState(1)
   const [socket, setSocket] = useState(null)
-  const ENDPOINT = "http://127.0.0.1:4001";
+  const ENDPOINT = process.env.REACT_APP_API_URL
+
 
 
   useEffect(() => {
@@ -17,7 +18,13 @@ function App() {
     setSocket(newSocket)
     
     return () => socket.disconnect();
-  }, [setSocket]);
+  }, [socket, setSocket]);
+
+  useEffect(() => {
+    socket && socket.on("move", (data)=> {
+      console.log(data)
+    })
+  }, [socket]);
 
   // const winCombos = [
   //   [0,1,2],
@@ -45,13 +52,13 @@ function App() {
   }
 
   function handleClick(event) {
-
     const ind = event.target.id
     const newArr = [...board]
     newArr[ind] = playerStatus
     console.log(newArr)
     setBoard(newArr)
     togglePlayer()
+    socket.emit("move", 1)
   }
 
  
